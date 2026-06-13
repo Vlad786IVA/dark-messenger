@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DARK_Messenger.Views.LoginPage"
+             xmlns:vm="clr-namespace:DARK_Messenger.ViewModels"
+             BackgroundColor="#0E1621"
+             Shell.NavBarIsVisible="False">
+    <ScrollView>
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="340" Spacing="0" Padding="32">
+
+            <!-- Logo D -->
+            <Border WidthRequest="72" HeightRequest="72" StrokeShape="RoundRectangle 20"
+                    BackgroundColor="#202B36" HorizontalOptions="Center"
+                    StrokeThickness="0">
+                <Label Text="D" FontSize="36" FontAttributes="Bold"
+                       TextColor="#2AABEE"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Label Text="DARK" FontSize="32" FontAttributes="Bold"
+                   TextColor="#2AABEE"
+                   HorizontalOptions="Center" Margin="0,14,0,4" />
+            <Label Text="Защищённый мессенджер" FontSize="12"
+                   TextColor="#8E8E93"
+                   HorizontalOptions="Center" Margin="0,0,0,24" />
+
+            <!-- ============ LOGIN FORM ============ -->
+            <VerticalStackLayout x:Name="LoginPanel" Spacing="0">
+                <Label Text="Логин" FontSize="12" TextColor="#8E8E93" Margin="4,0,0,6" />
+                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#1A2A40"
+                        Stroke="#2A3A50" StrokeThickness="1" Padding="14,4">
+                    <Entry Text="{Binding Username}" Placeholder="Введите логин"
+                           PlaceholderColor="#636366" TextColor="White"
+                           FontSize="14" BackgroundColor="Transparent"
+                           HeightRequest="44" />
+                </Border>
+
+                <Label Text="Пароль" FontSize="12" TextColor="#8E8E93" Margin="4,14,0,6" />
+                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#1A2A40"
+                        Stroke="#2A3A50" StrokeThickness="1" Padding="14,4">
+                    <Grid ColumnDefinitions="*,40">
+                        <Entry x:Name="PasswordEntry" Text="{Binding Password}"
+                               IsPassword="{Binding IsPasswordHidden}"
+                               Placeholder="Введите пароль" PlaceholderColor="#636366"
+                               TextColor="White" FontSize="14" BackgroundColor="Transparent"
+                               HeightRequest="44" />
+                        <Button Grid.Column="1" Text="{Binding PasswordEyeIcon}"
+                                FontSize="16" BackgroundColor="Transparent"
+                                TextColor="#8E8E93" WidthRequest="32" HeightRequest="32"
+                                VerticalOptions="Center"
+                                Clicked="TogglePassword_Click" />
+                    </Grid>
+                </Border>
+
+                <Button Text="Войти" BackgroundColor="#2AABEE" TextColor="White"
+                        FontSize="15" FontAttributes="Bold" CornerRadius="12"
+                        HeightRequest="48" Margin="0,18,0,0"
+                        Clicked="OnLoginClicked" />
+
+                <Button Text="Создать аккаунт"
+                        BackgroundColor="Transparent" TextColor="#2AABEE"
+                        FontSize="13" Margin="0,14,0,0"
+                        Clicked="OnRegisterClicked" />
+            </VerticalStackLayout>
+
+            <!-- Status -->
+            <Border x:Name="StatusBorder" BackgroundColor="#1A2A40"
+                    StrokeShape="RoundRectangle 10" Padding="14,10"
+                    Margin="0,14,0,0" IsVisible="False"
+                    Stroke="#2AABEE" StrokeThickness="1">
+                <Label x:Name="StatusText" TextColor="#2AABEE"
+                       FontSize="13" HorizontalTextAlignment="Center" />
+            </Border>
+
+            <ActivityIndicator x:Name="LoadingBar" IsRunning="False" IsVisible="False"
+                               Color="#2AABEE" Margin="0,14,0,0" HeightRequest="3" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

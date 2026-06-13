@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:DARK_Messenger.Converters"
+             x:Class="DARK_Messenger.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:FirstLettersConverter x:Key="FirstLettersConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <converters:IntGreaterThanZeroConverter x:Key="IntGreaterThanZeroConverter" />
+            <converters:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <converters:ChatTimeConverter x:Key="ChatTimeConverter" />
+            <converters:OnlineStatusConverter x:Key="OnlineStatusConverter" />
+            <converters:OnlineColorConverter x:Key="OnlineColorConverter" />
+            <converters:BubbleColorConverter x:Key="BubbleColorConverter" />
+            <converters:BubbleRadiusConverter x:Key="BubbleRadiusConverter" />
+            <converters:IsTextConverter x:Key="IsTextConverter" />
+            <converters:IsMediaConverter x:Key="IsMediaConverter" />
+            <converters:IsFileConverter x:Key="IsFileConverter" />
+            <converters:FileSizeConverter x:Key="FileSizeConverter" />
+            <converters:TimeConverter x:Key="TimeConverter" />
+            <converters:StatusIconConverter x:Key="StatusIconConverter" />
+            <converters:TimeAgoConverter x:Key="TimeAgoConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

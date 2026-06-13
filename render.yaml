@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: dark-messenger
+    runtime: node
+    repo: https://github.com/YOUR_USERNAME/dark-messenger
+    plan: free
+    region: frankfurt
+    rootDir: DARK_Server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_VERSION
+        value: 20
+    healthCheckPath: /api/health

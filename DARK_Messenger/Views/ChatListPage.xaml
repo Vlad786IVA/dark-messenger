@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DARK_Messenger.Views.ChatListPage"
+             xmlns:vm="clr-namespace:DARK_Messenger.ViewModels"
+             xmlns:models="clr-namespace:DARK_Messenger.Models"
+             BackgroundColor="#0E1621"
+             Title="DARK">
+    <ContentPage.BindingContext>
+        <vm:ChatListViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid BackgroundColor="#17212B" Padding="14,12" ColumnDefinitions="Auto,*,Auto">
+            <Border WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 10"
+                    BackgroundColor="#202B36" StrokeThickness="0">
+                <Label Text="D" FontSize="18" FontAttributes="Bold"
+                       TextColor="#2AABEE"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Label Grid.Column="1" Text="DARK" FontSize="18" FontAttributes="Bold"
+                   TextColor="White" VerticalOptions="Center" Margin="10,0,0,0" />
+            <Button Grid.Column="2" Text="⚙" FontSize="20" BackgroundColor="Transparent"
+                    TextColor="#8E8E93" WidthRequest="36" HeightRequest="36" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Chats}" SelectionMode="Single" SelectionChangedCommand="{Binding OpenChatCommand}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Chat">
+                        <Grid Padding="12,10" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2">
+                            <Border Grid.RowSpan="2" BackgroundColor="#202B36"
+                                    StrokeShape="RoundRectangle 24" StrokeThickness="0"
+                                    WidthRequest="48" HeightRequest="48" VerticalOptions="Start">
+                                <Label Text="{Binding Title, Converter={StaticResource FirstLettersConverter}}"
+                                       FontSize="16" FontAttributes="Bold" TextColor="#2AABEE"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <Label Grid.Column="1" Text="{Binding Title}" FontSize="15"
+                                   FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="{Binding LastMessageTime, Converter={StaticResource ChatTimeConverter}}"
+                                   FontSize="11" TextColor="#636366" VerticalOptions="Center" HorizontalOptions="End" />
+
+                            <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <Label Text="{Binding LastMessage}" FontSize="13" TextColor="#8E8E93" LineBreakMode="TailTruncation" />
+                                <Border Grid.Column="1" BackgroundColor="#2AABEE"
+                                        StrokeShape="RoundRectangle 9" StrokeThickness="0"
+                                        Padding="6,2" IsVisible="{Binding UnreadCount, Converter={StaticResource IntGreaterThanZeroConverter}}">
+                                    <Label Text="{Binding UnreadCount}" FontSize="10" FontAttributes="Bold"
+                                           TextColor="White" HorizontalOptions="Center" />
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <Button Text="+" BackgroundColor="#2AABEE" TextColor="White" FontSize="26" FontAttributes="Bold"
+                WidthRequest="52" HeightRequest="52" CornerRadius="26"
+                HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,18,18"
+                Clicked="OnNewChatClicked" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,84 @@
+<UserControl x:Class="DARK_Messenger_WPF.Controls.ChatBubble"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:DARK_Messenger_WPF.Converters"
+             Width="Auto" Height="Auto">
+    <UserControl.Resources>
+        <conv:BoolToCornerRadiusConverter x:Key="CornerRadiusConverter" />
+        <conv:BoolToMarginConverter x:Key="MarginConverter" />
+        <conv:BoolToAlignmentConverter x:Key="AlignmentConverter" />
+        <conv:DateTimeToTimeConverter x:Key="TimeConverter" />
+    </UserControl.Resources>
+    <Border x:Name="BubbleBorder"
+            CornerRadius="{Binding IsMine, Converter={StaticResource CornerRadiusConverter}}"
+            Padding="9,6"
+            MaxWidth="440"
+            HorizontalAlignment="{Binding IsMine, Converter={StaticResource AlignmentConverter}}"
+            Margin="{Binding IsMine, Converter={StaticResource MarginConverter}}"
+            MouseRightButtonDown="Bubble_MouseRightButtonDown">
+        <StackPanel>
+            <Border x:Name="ImageBorder" Visibility="Collapsed" CornerRadius="6" Margin="0,0,0,4" Cursor="Hand"
+                    MouseLeftButtonDown="Image_Click">
+                <Image x:Name="MessageImage" MaxWidth="320" MaxHeight="240" Stretch="Uniform" />
+            </Border>
+
+            <Border x:Name="FileBorder" Visibility="Collapsed" 
+                    Background="{DynamicResource PrimaryBrush}" CornerRadius="6" Padding="8,6" Margin="0,0,0,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="📎" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" x:Name="FileNameText" FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </Border>
+
+            <Border x:Name="AudioBorder" Visibility="Collapsed"
+                    Background="{DynamicResource PrimaryBrush}" CornerRadius="6" Padding="8,6" Margin="0,0,0,4"
+                    PreviewMouseLeftButtonDown="AudioPlay_Click">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Name="PlayIcon" Text="▶" FontSize="16"
+                               Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <Border x:Name="AudioTrack" Grid.Column="1" Height="4" CornerRadius="2"
+                            Background="{DynamicResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center">
+                        <Border x:Name="AudioProgress" Width="0" Height="4" CornerRadius="2"
+                                Background="{DynamicResource AccentBrush}" HorizontalAlignment="Left" />
+                    </Border>
+                    <TextBlock Grid.Column="2" x:Name="AudioDurationText" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <TextBlock x:Name="MessageText"
+                       Text="{Binding Content}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       TextWrapping="Wrap"
+                       FontSize="14" />
+
+            <Grid Margin="0,3,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" x:Name="EditedText" Text="изменено" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,6,0" Visibility="Collapsed" />
+                <TextBlock Grid.Column="2" x:Name="TimeText"
+                           Text="{Binding SentAt, Converter={StaticResource TimeConverter}}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="10" />
+                <TextBlock Grid.Column="3" x:Name="StatusIcon" FontSize="10"
+                           Foreground="{DynamicResource AccentBrush}" Margin="3,0,0,0"
+                           Visibility="Collapsed" />
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

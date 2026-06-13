@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DARK_Messenger.Controls.ChatBubble"
+             xmlns:models="clr-namespace:DARK_Messenger.Models">
+    <ContentView.Resources>
+        <Style TargetType="Label" x:Key="BubbleText">
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+    </ContentView.Resources>
+
+    <Grid ColumnDefinitions="Auto,*,Auto" Padding="4,2" RowDefinitions="Auto">
+        <Frame x:Name="AvatarFrame" Grid.Column="0" BackgroundColor="#2C2C2E" CornerRadius="14" WidthRequest="28" HeightRequest="28" HasShadow="False" IsVisible="{Binding IsOutgoing, Converter={StaticResource InverseBoolConverter}}">
+            <Label Text="{Binding SenderName, Converter={StaticResource FirstLettersConverter}}" FontSize="10" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Frame>
+
+        <Frame x:Name="BubbleFrame" Grid.Column="1" Padding="14,10" HasShadow="False" VerticalOptions="Start"
+               BackgroundColor="{Binding IsOutgoing, Converter={StaticResource BubbleColorConverter}}"
+               CornerRadius="{Binding IsOutgoing, Converter={StaticResource BubbleRadiusConverter}}">
+            <VerticalStackLayout Spacing="2">
+                <Label Style="{StaticResource BubbleText}" Text="{Binding Content}" IsVisible="{Binding Type, Converter={StaticResource IsTextConverter}}" />
+                
+                <Grid IsVisible="{Binding Type, Converter={StaticResource IsMediaConverter}}">
+                    <Image Source="{Binding FileUrl}" Aspect="AspectFill" HeightRequest="200" WidthRequest="200" />
+                    <Frame BackgroundColor="#80000000" CornerRadius="16" WidthRequest="32" HeightRequest="32" HorizontalOptions="Center" VerticalOptions="Center" HasShadow="False">
+                        <Label Text="▶" FontSize="16" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                </Grid>
+
+                <Frame IsVisible="{Binding Type, Converter={StaticResource IsFileConverter}}" BackgroundColor="#2C2C2E" Padding="10" CornerRadius="8" HasShadow="False">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="📄" FontSize="24" />
+                        <VerticalStackLayout>
+                            <Label Text="{Binding FileName}" TextColor="White" FontSize="13" />
+                            <Label Text="{Binding FileSize, Converter={StaticResource FileSizeConverter}}" TextColor="#8E8E93" FontSize="11" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Frame>
+
+                <HorizontalStackLayout Spacing="4" HorizontalOptions="End">
+                    <Label Text="{Binding Timestamp, Converter={StaticResource TimeConverter}}" FontSize="11" TextColor="#8E8E93" />
+                    <Label x:Name="StatusIcon" FontSize="12" TextColor="#8E8E93"
+                           Text="{Binding Status, Converter={StaticResource StatusIconConverter}}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+</ContentView>

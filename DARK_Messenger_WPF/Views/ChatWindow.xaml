@@ -1,0 +1,470 @@
+<Window x:Class="DARK_Messenger_WPF.Views.ChatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:DARK_Messenger_WPF.Converters"
+        xmlns:controls="clr-namespace:DARK_Messenger_WPF.Controls"
+        Title="DARK Messenger" Width="960" Height="680"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}"
+        Closing="Window_Closing"
+        IsVisibleChanged="Window_IsVisibleChanged"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        PreviewDragOver="Window_PreviewDragOver">
+    <Window.Resources>
+        <conv:DateTimeToTimeConverter x:Key="TimeConverter" />
+        <conv:BoolToCornerRadiusConverter x:Key="BubbleCornerRadius" />
+        <conv:BoolToMarginConverter x:Key="BubbleMargin" />
+        <conv:BoolToVisibilityConverter x:Key="BoolToVisibility" />
+        <conv:IntToVisibilityConverter x:Key="IntToVisibility" />
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions><ColumnDefinition Width="300" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+
+        <!-- ======================== LEFT PANEL ======================== -->
+        <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="56" />
+                    <RowDefinition Height="36" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+
+                <!-- ===== CHAT MODE (default) ===== -->
+                <!-- Header -->
+                <Border Grid.Row="0" Padding="16,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" x:Name="ConnIndicator" Width="8" Height="8" CornerRadius="4" Background="#666" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBlock Grid.Column="1" Text="DARK" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                        <Button Grid.Column="2" Content="✚" FontSize="18" Foreground="{DynamicResource AccentBrush}" Background="Transparent"
+                                BorderThickness="0" Width="36" Height="36" Cursor="Hand" VerticalAlignment="Center" Click="NewChatBtn_Click" />
+                    </Grid>
+                </Border>
+
+                <!-- Tabs -->
+                <Grid Grid.Row="1" Margin="12,0,12,4">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <Border x:Name="ChatsTab" Grid.Column="0" CornerRadius="8" Padding="8,4" Cursor="Hand" MouseLeftButtonDown="ShowChats">
+                        <TextBlock Text="Чаты" HorizontalAlignment="Center" Foreground="{DynamicResource AccentBrush}" FontSize="14" FontWeight="SemiBold" />
+                    </Border>
+                    <Border x:Name="ContactsTab" Grid.Column="1" CornerRadius="8" Padding="8,4" Cursor="Hand" MouseLeftButtonDown="ShowContacts">
+                        <TextBlock Text="Поиск" HorizontalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="14" />
+                    </Border>
+                    <Button Grid.Column="2" Content="👥" FontSize="16" Background="Transparent" BorderThickness="0"
+                            Foreground="{DynamicResource TextSecondaryBrush}" Cursor="Hand" Width="32" Click="CreateGroup_Click" />
+                </Grid>
+
+                <TextBox x:Name="ChatSearchBox" Grid.Row="2" Style="{StaticResource SearchTextBox}" TextChanged="ChatSearch_TextChanged"
+                         Padding="12,6" Margin="12,0,12,6" Tag="Поиск по чатам..." />
+
+                <!-- Search Panel -->
+                <Grid x:Name="SearchPanel" Grid.Row="2" Grid.RowSpan="2" Visibility="Collapsed" Margin="12,0,12,6">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <TextBox x:Name="SearchUserBox" Grid.Row="0" Style="{StaticResource SearchTextBox}" TextChanged="SearchUserBox_TextChanged" Padding="12,6" Tag="Поиск пользователей..." />
+                    <ListView x:Name="SearchResults" Grid.Row="1" Style="{StaticResource ChatListView}" Margin="0,6,0,0" SelectionChanged="SearchResults_SelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="40" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                    <Border Width="36" Height="36" CornerRadius="18" Background="{DynamicResource PrimaryBrush}">
+                                        <TextBlock Text="{Binding DisplayName[0]}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+                                        <TextBlock Text="{Binding DisplayName}" Style="{StaticResource ChatNameText}" />
+                                        <TextBlock Text="{Binding Username}" Style="{StaticResource ChatLastMessageText}" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="в сети" FontSize="11" Foreground="{DynamicResource AccentBrush}" Visibility="{Binding IsOnline, Converter={StaticResource BoolToVisibility}}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+
+                <TextBlock x:Name="NoChatsHint" Grid.Row="3" Text="Нет чатов" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <ListView x:Name="ChatList" Grid.Row="3" Style="{StaticResource ChatListView}" SelectionChanged="ChatList_SelectionChanged" MouseRightButtonDown="ChatList_RightClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="48" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Width="44" Height="44" Margin="0,0,10,0">
+                                    <Border Width="44" Height="44" CornerRadius="22" Background="{DynamicResource PrimaryBrush}">
+                                        <TextBlock Text="{Binding Name[0]}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <Ellipse Width="12" Height="12" Fill="{DynamicResource OnlineBrush}" Stroke="{DynamicResource SurfaceBrush}" StrokeThickness="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="{Binding OtherUser.IsOnline, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}" />
+                                </Grid>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource ChatNameText}" />
+                                    <TextBlock Text="{Binding LastMessage}" Style="{StaticResource ChatLastMessageText}" MaxWidth="150" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="8,0,0,0">
+                                    <TextBlock Text="{Binding LastMessageTime, Converter={StaticResource TimeConverter}}" Style="{StaticResource ChatTimeText}" HorizontalAlignment="Right" />
+                                    <Border Background="{DynamicResource AccentBrush}" CornerRadius="10" Padding="6,2" Margin="0,4,0,0" HorizontalAlignment="Right"
+                                            Visibility="{Binding UnreadCount, Converter={StaticResource IntToVisibility}}">
+                                        <TextBlock Text="{Binding UnreadCount}" FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" FontWeight="Bold" />
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- ===== SETTINGS MODE (overlay) ===== -->
+                <Grid x:Name="SettingsLeftPanel" Grid.Row="0" Grid.RowSpan="4" Background="{DynamicResource SurfaceBrush}" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="56" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Padding="16,0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="←" FontSize="22" Background="Transparent" BorderThickness="0"
+                                    Foreground="{DynamicResource AccentBrush}" Cursor="Hand" Width="36" Height="36"
+                                    VerticalAlignment="Center" Click="SettingsBack_Click" />
+                            <TextBlock Text="Настройки" FontSize="20" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <ListView x:Name="SettingsSectionList" Grid.Row="1"
+                              Style="{StaticResource ChatListView}"
+                              SelectionChanged="SettingsSectionList_SelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Icon}" FontSize="20" VerticalAlignment="Center" Width="36" TextAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="15"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                                    <TextBlock Grid.Column="2" Text="›" FontSize="22"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+
+                <!-- ===== BOTTOM NAV ===== -->
+                <Border Grid.Row="4" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Background="{DynamicResource SurfaceBrush}">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <Button x:Name="NavChatsBtn" Grid.Column="0" Content="💬 Чаты" FontSize="13" FontWeight="SemiBold"
+                                Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AccentBrush}"
+                                Cursor="Hand" Click="NavChats_Click" />
+                        <Button x:Name="NavSettingsBtn" Grid.Column="1" Content="⚙ Настройки" FontSize="13"
+                                Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondaryBrush}"
+                                Cursor="Hand" Click="NavSettings_Click" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ======================== RIGHT PANEL: CHAT VIEW ======================== -->
+        <Grid Grid.Column="1" x:Name="ChatViewPanel">
+            <Grid.RowDefinitions><RowDefinition Height="56" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+
+            <TextBlock x:Name="NoChatText" Grid.Row="0" Grid.RowSpan="3" Text="Выберите чат для начала общения" FontSize="16"
+                       Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+            <!-- Chat Header -->
+            <Border x:Name="ChatHeader" Grid.Row="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,0,1" Padding="16,0" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="ChatNameText" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock x:Name="OnlineStatus" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                        <TextBlock x:Name="TypingIndicator" FontSize="11" Foreground="{DynamicResource AccentBrush}" Margin="12,0,0,0" VerticalAlignment="Center" Visibility="Collapsed" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="🔍" FontSize="14" Background="Transparent" BorderThickness="0"
+                            Foreground="{DynamicResource TextSecondaryBrush}" Cursor="Hand" Width="30" Height="30" Click="SearchChat_Click" />
+                </Grid>
+            </Border>
+
+            <!-- Message search bar -->
+            <Border x:Name="MsgSearchBar" Grid.Row="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,0,1" Padding="12,8" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <TextBox x:Name="MsgSearchBox" Style="{StaticResource SearchTextBox}" TextChanged="MsgSearchBox_TextChanged" Tag="Поиск в чате..." />
+                    <Button Grid.Column="1" Content="✕" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="16" Cursor="Hand" Click="CloseSearch_Click" Margin="8,0,0,0" />
+                </Grid>
+            </Border>
+
+            <ScrollViewer x:Name="MessageScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="Collapsed" ScrollChanged="MessageScroll_ScrollChanged">
+                <ItemsControl x:Name="MessageList" AllowDrop="True">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:ChatBubble DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Reply preview -->
+            <Border x:Name="ReplyBar" Grid.Row="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,1,0,0" Padding="12,6" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock x:Name="ReplyNameText" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                        <TextBlock x:Name="ReplyContentText" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxWidth="300" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="✕" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="14" Cursor="Hand" Click="CancelReply_Click" />
+                </Grid>
+            </Border>
+
+            <Border x:Name="InputArea" Grid.Row="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,1,0,0" Padding="12,8" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="📎" FontSize="18" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondaryBrush}" Width="36" Height="36" Cursor="Hand" Click="AttachFile_Click" />
+                    <Button Grid.Column="1" x:Name="MicBtn" Content="🎤" FontSize="18" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondaryBrush}" Width="36" Height="36" Cursor="Hand" Click="MicBtn_Click" />
+                    <Button Grid.Column="2" x:Name="EmojiBtn" Content="😊" FontSize="18" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextSecondaryBrush}" Width="36" Height="36" Cursor="Hand" Margin="0,0,8,0" Click="EmojiBtn_Click" />
+                    <TextBox x:Name="MessageInput" Grid.Column="3" Style="{StaticResource DarkTextBox}" KeyDown="MessageInput_KeyDown" AcceptsReturn="True" MaxHeight="100" VerticalContentAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Column="4" Style="{StaticResource SendButton}" Margin="8,0,0,0" Click="SendButton_Click" />
+                </Grid>
+            </Border>
+
+            <Popup x:Name="EmojiPopup" Placement="Top" PlacementTarget="{Binding ElementName=EmojiBtn}" StaysOpen="False" AllowsTransparency="True">
+                <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Width="310" Height="260">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" x:Name="EmojiCategoryBar" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,6" />
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <WrapPanel x:Name="EmojiPanel" MaxWidth="280" />
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Popup>
+        </Grid>
+
+        <!-- ======================== RIGHT PANEL: SETTINGS CONTENT ======================== -->
+        <Grid x:Name="SettingsContentPanel" Grid.Column="1" Background="{DynamicResource BackgroundBrush}" Visibility="Collapsed">
+
+            <!-- ============ PROFILE PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPageProfile" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="0,28,0,24">
+                        <StackPanel>
+                            <Border x:Name="SettingsAvatarBorder" Width="96" Height="96" CornerRadius="48"
+                                    Background="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" Cursor="Hand"
+                                    MouseLeftButtonDown="SettingsAvatar_Click">
+                                <TextBlock x:Name="SettingsAvatarText" Text="?" FontSize="40" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock x:Name="SettingsDisplayNameHeader" FontSize="22" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,14,0,2" />
+                            <TextBlock x:Name="SettingsUsernameText" FontSize="14"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,20" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Имя" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8" />
+                            <TextBox x:Name="SettingsDisplayNameBox" Style="{StaticResource DarkTextBox}" FontSize="15" Padding="14,12" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,20" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="О себе" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8" />
+                            <TextBox Text="Пользователь DARK" Style="{StaticResource DarkTextBox}" FontSize="15" Padding="14,12" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,16" Margin="0,1,0,0">
+                        <StackPanel>
+                            <Button Content="💾  Сохранить" Style="{StaticResource AccentButton}"
+                                    HorizontalAlignment="Stretch" Height="46" FontSize="15" Click="SettingsSave_Click" />
+                            <TextBlock x:Name="SettingsStatusText" Foreground="{DynamicResource AccentBrush}"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       TextWrapping="Wrap" TextAlignment="Center" Margin="0,14,0,0" Visibility="Collapsed" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============ APPEARANCE PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPageAppearance" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,24" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="🎨  Тема оформления" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,20" />
+                            <Border Background="{DynamicResource PrimaryBrush}" CornerRadius="12" Padding="16,14">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" x:Name="SettingsThemeIcon" Text="🌙" FontSize="28" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock x:Name="SettingsThemeLabel" Text="Светлая тема" FontSize="15" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        <TextBlock x:Name="SettingsThemeDesc" Text="Нажмите, чтобы сменить оформление" FontSize="12"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <Button x:Name="SettingsThemeBtn" Content="Сменить тему" Style="{StaticResource LinkButton}"
+                                    HorizontalAlignment="Stretch" FontSize="14" Margin="0,12,0,0"
+                                    Click="SettingsTheme_Click" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============ NOTIFICATIONS PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPageNotifications" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,24" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="🔔  Уведомления" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                            <Border Background="{DynamicResource PrimaryBrush}" CornerRadius="10" Padding="16,20">
+                                <StackPanel>
+                                    <TextBlock Text="⚙️  Настройка уведомлений" FontSize="14"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Скоро будет доступно" FontSize="12"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============ PRIVACY PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPagePrivacy" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,24" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="🔒  Конфиденциальность" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                            <Border Background="{DynamicResource PrimaryBrush}" CornerRadius="10" Padding="16,20">
+                                <StackPanel>
+                                    <TextBlock Text="⚙️  Настройки конфиденциальности" FontSize="14"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Скоро будет доступно" FontSize="12"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============ LANGUAGE PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPageLanguage" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,24" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="🌐  Язык" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                            <Border Background="{DynamicResource PrimaryBrush}" CornerRadius="12" Padding="16,14">
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="🇷🇺" FontSize="30" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="Русский" FontSize="15" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                                        <TextBlock Text="Язык интерфейса" FontSize="12"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============ SESSIONS PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPageSessions" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,24" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="📱  Активные сессии" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,16" />
+                            <ItemsControl x:Name="SessionsList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource PrimaryBrush}" CornerRadius="10" Padding="16,12" Margin="0,0,0,10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="💻" FontSize="24" VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding DeviceName}" FontSize="14" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding LastActive}" FontSize="11"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0" />
+                                                </StackPanel>
+                                                <Button Grid.Column="2" Content="Завершить" FontSize="12"
+                                                        Background="#E94560" Foreground="White" BorderThickness="0"
+                                                        Padding="10,6" Cursor="Hand"
+                                                        Tag="{Binding Id}" Click="TerminateSession_Click" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ============ ABOUT PAGE ============ -->
+            <ScrollViewer x:Name="SettingsPageAbout" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="0,0,0,24">
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="32,36" Margin="0,1,0,0">
+                        <StackPanel HorizontalAlignment="Center">
+                            <Border Width="80" Height="80" CornerRadius="20" Background="{DynamicResource AccentBrush}" HorizontalAlignment="Center">
+                                <TextBlock Text="D" FontSize="40" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="DARK Messenger" FontSize="22" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" Margin="0,16,0,4" />
+                            <TextBlock Text="Версия 1.0" FontSize="14"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,20" Margin="0,1,0,0">
+                        <StackPanel>
+                            <TextBlock Text="О программе" FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,10" />
+                            <TextBlock Text="Защищённый мессенджер с современным интерфейсом"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" TextWrapping="Wrap" />
+                            <TextBlock Text="© 2026 IVASHKOV" Foreground="{DynamicResource TextSecondaryBrush}"
+                                       FontSize="12" Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="{DynamicResource SurfaceBrush}" Padding="24,20" Margin="0,1,0,0">
+                        <StackPanel>
+                            <Button Content="🚪  Выйти из аккаунта" Style="{StaticResource AccentButton}"
+                                    HorizontalAlignment="Stretch" Height="46" FontSize="14"
+                                    Background="#E94560" Foreground="#FFFFFF" Click="Logout_Click" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ======================== THEME SWITCH OVERLAY ======================== -->
+        <Border x:Name="ThemeOverlay" Grid.ColumnSpan="2" Background="Black" Opacity="0"
+                IsHitTestVisible="False" Visibility="Collapsed" />
+    </Grid>
+</Window>

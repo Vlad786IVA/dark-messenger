@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DARK_Messenger.Views.ContactsPage"
+             xmlns:models="clr-namespace:DARK_Messenger.Models"
+             BackgroundColor="#0E1621"
+             Title="Контакты"
+             Shell.NavBarIsVisible="True">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="➕" Order="Primary" Priority="0" Clicked="OnAddContact" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*">
+        <SearchBar Placeholder="Поиск..." TextColor="White" PlaceholderColor="#636366"
+                   BackgroundColor="#17212B" CancelButtonColor="#2AABEE" Margin="0,0,0,0" HeightRequest="48" />
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Contacts}" SelectionMode="Single" SelectionChanged="OnContactSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Contact">
+                    <Grid Padding="12,10" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <Border Grid.RowSpan="2" BackgroundColor="#202B36"
+                                StrokeShape="RoundRectangle 22" StrokeThickness="0"
+                                WidthRequest="44" HeightRequest="44" VerticalOptions="Start">
+                            <Label Text="{Binding DisplayName, Converter={StaticResource FirstLettersConverter}}"
+                                   FontSize="14" FontAttributes="Bold" TextColor="#2AABEE"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+
+                        <Label Grid.Column="1" Text="{Binding DisplayName}" FontSize="15" TextColor="White" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Grid.Row="1" Text="{Binding IsOnline, Converter={StaticResource OnlineStatusConverter}}"
+                               FontSize="12" TextColor="{Binding IsOnline, Converter={StaticResource OnlineColorConverter}}" VerticalOptions="Center" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

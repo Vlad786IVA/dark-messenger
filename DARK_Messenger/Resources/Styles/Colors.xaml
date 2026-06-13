@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Color x:Key="Primary">#1DA2F1</Color>
+    <Color x:Key="PrimaryDark">#168ACD</Color>
+    <Color x:Key="Background">#0F0F0F</Color>
+    <Color x:Key="Surface">#1C1C1E</Color>
+    <Color x:Key="SurfaceLight">#2C2C2E</Color>
+    <Color x:Key="Card">#242426</Color>
+    <Color x:Key="TextPrimary">#F5F5F5</Color>
+    <Color x:Key="TextSecondary">#8E8E93</Color>
+    <Color x:Key="Hint">#636366</Color>
+    <Color x:Key="Divider">#38383A</Color>
+    <Color x:Key="Error">#FF453A</Color>
+    <Color x:Key="Success">#30D158</Color>
+    <Color x:Key="Warning">#FF9F0A</Color>
+    <Color x:Key="Online">#30D158</Color>
+    <Color x:Key="SentMessage">#1DA2F1</Color>
+    <Color x:Key="ReceivedMessage">#1C1C1E</Color>
+    <Color x:Key="DarkBackground">#0F0F0F</Color>
+    <Color x:Key="White">#FFFFFF</Color>
+</ResourceDictionary>

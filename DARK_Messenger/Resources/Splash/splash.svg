@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
+  <rect width="456" height="456" fill="#0E1621"/>
+  <rect x="68" y="68" width="320" height="320" rx="64" fill="#202B36" stroke="#2AABEE" stroke-width="2"/>
+  <text x="228" y="282" font-family="Arial,sans-serif" font-size="240" font-weight="bold" fill="#2AABEE" text-anchor="middle">D</text>
+</svg>

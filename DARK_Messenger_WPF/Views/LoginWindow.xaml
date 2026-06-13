@@ -1,0 +1,189 @@
+<Window x:Class="DARK_Messenger_WPF.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DARK Messenger"
+        Width="460" Height="620"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True">
+    <Window.Resources>
+        <DropShadowEffect x:Key="NeonGlow" Color="#2AABEE" BlurRadius="24" ShadowDepth="0" Opacity="0.6" />
+        <DropShadowEffect x:Key="NeonGlowStrong" Color="#2AABEE" BlurRadius="40" ShadowDepth="0" Opacity="0.8" />
+        <DropShadowEffect x:Key="Shadow" Color="#000000" BlurRadius="30" ShadowDepth="4" Opacity="0.5" />
+    </Window.Resources>
+
+    <Border Effect="{StaticResource Shadow}" CornerRadius="16" Background="#0E1621">
+        <Grid Margin="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- ===== CUSTOM TITLE BAR (also handles drag) ===== -->
+            <Border Grid.Row="0" Background="#0A0E17" CornerRadius="16,16,0,0" Padding="16,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="DARK" FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="Мессенджер" FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="MinimizeBtn" Content="─" FontSize="14" Width="36" Height="28"
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                Cursor="Hand" Click="Minimize_Click" />
+                        <Button x:Name="CloseBtn" Content="✕" FontSize="14" Width="36" Height="28"
+                                Background="Transparent" BorderThickness="0"
+                                Foreground="{DynamicResource TextSecondaryBrush}"
+                                Cursor="Hand" Click="Close_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ===== CONTENT ===== -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="340" Margin="0,10,0,30">
+
+                    <!-- Logo -->
+                    <Border Width="72" Height="72" CornerRadius="20" Background="#202B36"
+                            HorizontalAlignment="Center" Effect="{StaticResource NeonGlow}">
+                        <TextBlock Text="D" FontSize="36" FontWeight="Bold"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Text="DARK" FontSize="32" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}"
+                               HorizontalAlignment="Center" Margin="0,14,0,4"
+                               Effect="{StaticResource NeonGlow}" />
+                    <TextBlock Text="Защищённый мессенджер" FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,0,0,6" />
+
+                    <!-- ============ LOGIN FORM ============ -->
+                    <StackPanel x:Name="LoginPanel" Margin="0,16,0,0">
+                        <Border Background="Transparent" Margin="4,0,0,6">
+                            <TextBlock Text="Логин" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+                        <Border CornerRadius="12" Background="#1A2A40" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                            <TextBox x:Name="UsernameBox" Background="Transparent" BorderThickness="0"
+                                     FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                     Padding="14,12" GotFocus="RemovePlaceholder" LostFocus="SetPlaceholder"
+                                     Tag="Введите логин" />
+                        </Border>
+
+                        <Border Background="Transparent" Margin="4,14,0,6">
+                            <TextBlock Text="Пароль" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+                        <Border CornerRadius="12" Background="#1A2A40" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                            <Grid>
+                                <PasswordBox x:Name="PasswordHidden" Background="Transparent" BorderThickness="0"
+                                             FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                             Padding="14,12,40,12" />
+                                <TextBox x:Name="PasswordVisible" Visibility="Collapsed" Background="Transparent" BorderThickness="0"
+                                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                         Padding="14,12,40,12" />
+                                <Button x:Name="TogglePasswordBtn" Content="👁" FontSize="16"
+                                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                                        Width="32" Height="32" Margin="0,0,4,0"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Cursor="Hand" Click="TogglePassword_Click" />
+                            </Grid>
+                        </Border>
+
+                        <Button Content="Войти" Style="{StaticResource AccentButton}"
+                                HorizontalAlignment="Stretch" Height="46" FontSize="15"
+                                Margin="0,18,0,0" Click="SignIn_Click" />
+
+                        <Button Content="Создать аккаунт"
+                                Style="{StaticResource LinkButton}"
+                                HorizontalAlignment="Center" Margin="0,14,0,0"
+                                FontSize="13" Click="CreateAccount_Click" />
+                    </StackPanel>
+
+                    <!-- ============ REGISTER FORM ============ -->
+                    <StackPanel x:Name="RegisterPanel" Visibility="Collapsed" Margin="0,16,0,0">
+                        <Border Background="Transparent" Margin="4,0,0,6">
+                            <TextBlock Text="Логин" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+                        <Border CornerRadius="12" Background="#1A2A40" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                            <TextBox x:Name="RegUsernameBox" Background="Transparent" BorderThickness="0"
+                                     FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                     Padding="14,12" GotFocus="RemovePlaceholder" LostFocus="SetPlaceholder"
+                                     Tag="Введите логин" />
+                        </Border>
+
+                        <Border Background="Transparent" Margin="4,14,0,6">
+                            <TextBlock Text="Пароль" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+                        <Border CornerRadius="12" Background="#1A2A40" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                            <Grid>
+                                <PasswordBox x:Name="RegPasswordHidden" Background="Transparent" BorderThickness="0"
+                                             FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                             Padding="14,12,40,12" />
+                                <TextBox x:Name="RegPasswordVisible" Visibility="Collapsed" Background="Transparent" BorderThickness="0"
+                                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                         Padding="14,12,40,12" />
+                                <Button x:Name="ToggleRegPasswordBtn" Content="👁" FontSize="16"
+                                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                                        Width="32" Height="32" Margin="0,0,4,0"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Cursor="Hand" Click="ToggleRegPassword_Click" />
+                            </Grid>
+                        </Border>
+
+                        <Border Background="Transparent" Margin="4,14,0,6">
+                            <TextBlock Text="Повторите пароль" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+                        <Border CornerRadius="12" Background="#1A2A40" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                            <Grid>
+                                <PasswordBox x:Name="RegConfirmHidden" Background="Transparent" BorderThickness="0"
+                                             FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                             Padding="14,12,40,12" />
+                                <TextBox x:Name="RegConfirmVisible" Visibility="Collapsed" Background="Transparent" BorderThickness="0"
+                                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                                         Padding="14,12,40,12" />
+                                <Button x:Name="ToggleRegConfirmBtn" Content="👁" FontSize="16"
+                                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                                        Width="32" Height="32" Margin="0,0,4,0"
+                                        Background="Transparent" BorderThickness="0"
+                                        Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Cursor="Hand" Click="ToggleRegConfirm_Click" />
+                            </Grid>
+                        </Border>
+
+                        <Button Content="Зарегистрироваться"
+                                Style="{StaticResource AccentButton}"
+                                HorizontalAlignment="Stretch" Height="46" FontSize="15"
+                                Margin="0,18,0,0" Click="Register_Click" />
+
+                        <Button Content="Назад ко входу"
+                                Style="{StaticResource LinkButton}"
+                                HorizontalAlignment="Center" Margin="0,14,0,0"
+                                FontSize="13" Click="BackToLogin_Click" />
+                    </StackPanel>
+
+                    <!-- Status -->
+                    <Border x:Name="StatusBorder" Background="#1A2A40" CornerRadius="10"
+                            Padding="14,10" Margin="0,14,0,0" Visibility="Collapsed"
+                            BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1">
+                        <TextBlock x:Name="StatusText" Foreground="{DynamicResource AccentBrush}"
+                                   FontSize="13" TextWrapping="Wrap" TextAlignment="Center" />
+                    </Border>
+
+                    <ProgressBar x:Name="LoadingBar" IsIndeterminate="True" Visibility="Collapsed"
+                                 Margin="0,14,0,0" Foreground="{DynamicResource AccentBrush}"
+                                 Height="3" Background="#1A2A40" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Window>

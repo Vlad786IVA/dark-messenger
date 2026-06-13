@@ -1,0 +1,44 @@
+<Window x:Class="DARK_Messenger_WPF.Views.NewGroupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Новая группа" Width="380" Height="460"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}"
+        WindowStyle="None" AllowsTransparency="True"
+        ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="Transparent" MouseLeftButtonDown="Drag_MouseDown" Padding="16,0">
+            <Grid>
+                <TextBlock Text="Новая группа" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                <Button Content="✕" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource TextSecondaryBrush}" FontSize="18" Cursor="Hand" Click="Close_Click" Width="36" Height="36" />
+            </Grid>
+        </Border>
+        <StackPanel Grid.Row="1" Margin="16,0,16,16">
+            <TextBlock Text="Название группы" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4" />
+            <TextBox x:Name="GroupNameBox" Style="{StaticResource DarkTextBox}" Margin="0,0,0,12" />
+            <TextBlock Text="Добавить участников" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,4" />
+            <TextBox x:Name="SearchUserBox" Style="{StaticResource SearchTextBox}" TextChanged="SearchUserBox_TextChanged" Tag="Поиск..." Margin="0,0,0,8" />
+            <ListView x:Name="UserList" Style="{StaticResource ChatListView}" MaxHeight="200">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DisplayName}" Style="{StaticResource ChatNameText}" />
+                                <TextBlock Text="{Binding Username}" Style="{StaticResource ChatLastMessageText}" />
+                            </StackPanel>
+                            <CheckBox Grid.Column="1" x:Name="MemberCheck" IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Content="Создать группу" Style="{StaticResource AccentButton}" HorizontalAlignment="Stretch" Margin="0,12,0,0" Click="Create_Click" />
+            <TextBlock x:Name="StatusText" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" TextAlignment="Center" Margin="0,8,0,0" Visibility="Collapsed" />
+        </StackPanel>
+    </Grid>
+</Window>

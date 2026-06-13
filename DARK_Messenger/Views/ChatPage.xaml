@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DARK_Messenger.Views.ChatPage"
+             xmlns:vm="clr-namespace:DARK_Messenger.ViewModels"
+             xmlns:models="clr-namespace:DARK_Messenger.Models"
+             xmlns:controls="clr-namespace:DARK_Messenger.Controls"
+             BackgroundColor="#0E1621"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.BindingContext>
+        <vm:ChatViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Chat header -->
+        <Grid BackgroundColor="#17212B" Padding="10,8" ColumnDefinitions="Auto,*,Auto">
+            <Button Text="←" FontSize="20" BackgroundColor="Transparent" TextColor="#2AABEE"
+                    WidthRequest="36" HeightRequest="36" Clicked="OnBackClicked" />
+            <Border Grid.Column="0" WidthRequest="36" HeightRequest="36"
+                    StrokeShape="RoundRectangle 10" BackgroundColor="#202B36" StrokeThickness="0"
+                    Margin="36,0,0,0">
+                <Label Text="D" FontSize="16" FontAttributes="Bold" TextColor="#2AABEE"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Label Grid.Column="1" Text="{Binding ChatTitle}" FontSize="16" FontAttributes="Bold"
+                   TextColor="White" VerticalOptions="Center" Margin="8,0,0,0" />
+        </Grid>
+
+        <!-- Messages -->
+        <CollectionView Grid.Row="1" x:Name="MessagesList" ItemsSource="{Binding Messages}"
+                        VerticalOptions="FillAndExpand" ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Message">
+                    <controls:ChatBubble />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Input bar -->
+        <Grid Grid.Row="2" BackgroundColor="#17212B" Padding="8,6" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+            <Button Text="📎" FontSize="22" BackgroundColor="Transparent" TextColor="#8E8E93"
+                    WidthRequest="40" HeightRequest="40"
+                    Command="{Binding AttachPhotoCommand}" />
+
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 18" BackgroundColor="#202B36"
+                    Stroke="#2A3A50" StrokeThickness="1" Padding="14,2">
+                <Entry Text="{Binding NewMessageText}" Placeholder="Сообщение..."
+                       PlaceholderColor="#636366" TextColor="White"
+                       BackgroundColor="Transparent" HeightRequest="40" FontSize="14"
+                       Completed="OnEntryCompleted" />
+            </Border>
+
+            <Button Grid.Column="2" Text="🎙" FontSize="22" BackgroundColor="Transparent"
+                    TextColor="#8E8E93" WidthRequest="40" HeightRequest="40"
+                    Command="{Binding RecordCircleCommand}" />
+
+            <Button Grid.Column="3" Text="➤" FontSize="18" BackgroundColor="#2AABEE" TextColor="White"
+                    WidthRequest="40" HeightRequest="40" CornerRadius="20"
+                    Command="{Binding SendMessageCommand}" IsEnabled="{Binding NewMessageText, Converter={StaticResource StringNotEmptyConverter}}" />
+        </Grid>
+    </Grid>
+</ContentPage>
