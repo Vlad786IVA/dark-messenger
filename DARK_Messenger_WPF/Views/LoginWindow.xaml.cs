@@ -203,14 +203,14 @@ public partial class LoginWindow : Window
     {
         LoginPanel.Visibility = Visibility.Collapsed;
         RegisterPanel.Visibility = Visibility.Visible;
-        StatusText.Visibility = Visibility.Collapsed;
+        StatusBorder.Visibility = Visibility.Collapsed;
     }
 
     private void BackToLogin_Click(object sender, RoutedEventArgs e)
     {
         RegisterPanel.Visibility = Visibility.Collapsed;
         LoginPanel.Visibility = Visibility.Visible;
-        StatusText.Visibility = Visibility.Collapsed;
+        StatusBorder.Visibility = Visibility.Collapsed;
     }
 
     private void OpenChatWindow()
@@ -224,7 +224,7 @@ public partial class LoginWindow : Window
     private void ShowStatus(string message)
     {
         StatusText.Text = message;
-        StatusText.Visibility = Visibility.Visible;
+        StatusBorder.Visibility = Visibility.Visible;
     }
 
     private void ShowLoading(bool loading)

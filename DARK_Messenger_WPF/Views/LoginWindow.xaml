@@ -172,10 +172,10 @@
                     </StackPanel>
 
                     <!-- Status -->
-                    <Border x:Name="StatusBorder" Background="#1A2A40" CornerRadius="10"
+                    <Border x:Name="StatusBorder" Background="#2A1520" CornerRadius="10"
                             Padding="14,10" Margin="0,14,0,0" Visibility="Collapsed"
-                            BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1">
-                        <TextBlock x:Name="StatusText" Foreground="{DynamicResource AccentBrush}"
+                            BorderBrush="#FF3B30" BorderThickness="1">
+                        <TextBlock x:Name="StatusText" Foreground="#FF3B30"
                                    FontSize="13" TextWrapping="Wrap" TextAlignment="Center" />
                     </Border>
 
