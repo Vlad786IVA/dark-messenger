@@ -11,13 +11,13 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
         _vm = new LoginViewModel();
         BindingContext = _vm;
-        _vm.OnLoginSuccess += async () => await Shell.Current.GoToAsync("//main");
-        _vm.OnGoToRegister += async () => await Shell.Current.GoToAsync("//register");
-        _vm.OnError += msg =>
+        _vm.OnLoginSuccess += () => MainThread.BeginInvokeOnMainThread(async () => await Shell.Current.GoToAsync("//main"));
+        _vm.OnGoToRegister += () => MainThread.BeginInvokeOnMainThread(async () => await Shell.Current.GoToAsync("//register"));
+        _vm.OnError += msg => MainThread.BeginInvokeOnMainThread(() =>
         {
             StatusText.Text = msg;
             StatusBorder.IsVisible = true;
-        };
+        });
     }
 
     protected override void OnAppearing()
