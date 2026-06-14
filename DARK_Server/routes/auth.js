@@ -38,6 +38,16 @@ router.post('/login', authLimiter, (req, res) => {
   res.json({ token, userId: user.id, displayName: user.display_name, username: user.username });
 });
 
+router.post('/reset-password', authLimiter, (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ message: 'Username and password required' });
+  const user = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  const hash = bcrypt.hashSync(password, 10);
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(hash, user.id);
+  res.json({ message: 'Password updated' });
+});
+
 router.get('/sessions', (req, res) => {
   const payload = auth.verifyToken(req.headers.authorization?.split(' ')[1]);
   if (!payload) return res.status(401).json({ message: 'Unauthorized' });
