@@ -1,5 +1,7 @@
 using System.IO;
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
 using Newtonsoft.Json;
 using DARK_Messenger_WPF.Models;
@@ -8,7 +10,16 @@ namespace DARK_Messenger_WPF.Services;
 
 public static class ApiClient
 {
-    private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(15) };
+    private static readonly HttpClient _http = new(new SocketsHttpHandler
+    {
+        SslOptions = new System.Net.Security.SslClientAuthenticationOptions
+        {
+            EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13
+        },
+        ConnectTimeout = TimeSpan.FromSeconds(10),
+        PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+    })
+    { Timeout = TimeSpan.FromSeconds(15) };
     private static string _baseUrl = (System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "https://dark-messenger-0h3o.onrender.com") + "/api";
     public static string? Token { get; set; }
     public static string BaseUrl
