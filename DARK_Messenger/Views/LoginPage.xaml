@@ -63,16 +63,17 @@
             </VerticalStackLayout>
 
             <!-- Status -->
-            <Border x:Name="StatusBorder" BackgroundColor="#1A2A40"
+            <Border x:Name="StatusBorder" BackgroundColor="#2A1520"
                     StrokeShape="RoundRectangle 10" Padding="14,10"
                     Margin="0,14,0,0" IsVisible="False"
-                    Stroke="#2AABEE" StrokeThickness="1">
-                <Label x:Name="StatusText" TextColor="#2AABEE"
+                    Stroke="#FF3B30" StrokeThickness="1">
+                <Label x:Name="StatusText" TextColor="#FF3B30"
                        FontSize="13" HorizontalTextAlignment="Center" />
             </Border>
 
-            <ActivityIndicator x:Name="LoadingBar" IsRunning="False" IsVisible="False"
-                               Color="#2AABEE" Margin="0,14,0,0" HeightRequest="3" />
+            <ActivityIndicator x:Name="LoadingBar" Color="#2AABEE"
+                               IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               HeightRequest="32" Margin="0,14,0,0" />
 
         </VerticalStackLayout>
     </ScrollView>
