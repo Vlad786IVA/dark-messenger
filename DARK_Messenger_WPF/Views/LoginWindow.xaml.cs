@@ -92,6 +92,16 @@ public partial class LoginWindow : Window
 
         ShowLoading(true);
 
+        // Проверка соединения
+        ShowStatus("Подключение к серверу...");
+        var (pingOk, pingError) = await ApiClient.PingAsync();
+        if (!pingOk)
+        {
+            ShowStatus(pingError);
+            ShowLoading(false);
+            return;
+        }
+
         var (ok, error, token, userId, displayName) = await ApiClient.Login(username, password);
 
         if (ok && token != null)
@@ -127,6 +137,16 @@ public partial class LoginWindow : Window
         if (password.Length < 4) { ShowStatus("Пароль должен быть минимум 4 символа"); return; }
 
         ShowLoading(true);
+
+        // Проверка соединения
+        ShowStatus("Подключение к серверу...");
+        var (pingOk, pingError) = await ApiClient.PingAsync();
+        if (!pingOk)
+        {
+            ShowStatus(pingError);
+            ShowLoading(false);
+            return;
+        }
 
         var (ok, error, token) = await ApiClient.Register(username, username, password);
 

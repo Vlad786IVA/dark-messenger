@@ -8,7 +8,7 @@ namespace DARK_Messenger_WPF.Services;
 
 public static class ApiClient
 {
-    private static readonly HttpClient _http = new();
+    private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(15) };
     private static string _baseUrl = (System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "https://dark-messenger-0h3o.onrender.com") + "/api";
     public static string? Token { get; set; }
     public static string BaseUrl
@@ -68,6 +68,18 @@ public static class ApiClient
             return (false, err?.message ?? "Ошибка регистрации", null);
         }
         catch (Exception ex) { return (false, ex.Message, null); }
+    }
+
+    public static async Task<(bool ok, string error)> PingAsync()
+    {
+        try
+        {
+            var res = await _http.GetAsync($"{_baseUrl}/health");
+            if (res.IsSuccessStatusCode) return (true, "");
+            return (false, "Сервер недоступен");
+        }
+        catch (TaskCanceledException) { return (false, "Сервер не отвечает (таймаут 15с)"); }
+        catch (Exception ex) { return (false, $"Ошибка подключения: {ex.Message}"); }
     }
 
     public static async Task<(bool ok, string error, string? token, int userId, string? displayName)> Login(string u, string pw)
