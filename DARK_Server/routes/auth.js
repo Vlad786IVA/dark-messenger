@@ -65,11 +65,11 @@ router.delete('/sessions/:id', (req, res) => {
 });
 
 router.delete('/reset-db', (req, res) => {
-  const secret = process.env.RESET_DB_SECRET;
-  if (!secret || secret !== 'DARK_SECRET_RESET_KEY') {
+  const secret = req.headers['x-reset-secret'];
+  if (!secret || secret !== 'DARK_RESET_KEY') {
     return res.status(403).json({ message: 'Forbidden' });
   }
-  const tables = ['sessions', 'messages', 'chats', 'users', 'group_members', 'users_sessions'];
+  const tables = ['sessions', 'messages', 'chats', 'users', 'group_members'];
   tables.forEach(t => db.prepare(`DELETE FROM ${t}`).run());
   res.json({ message: 'Database cleared' });
 });
