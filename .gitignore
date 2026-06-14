@@ -1,6 +1,7 @@
 node_modules/
 obj/
 bin/
+Build/
 *.db
 *.db-wal
 *.db-shm
