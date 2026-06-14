@@ -2,7 +2,7 @@ services:
   - type: web
     name: dark-messenger
     runtime: node
-    repo: https://github.com/YOUR_USERNAME/dark-messenger
+    repo: https://github.com/Vlad786IVA/dark-messenger
     plan: free
     region: frankfurt
     rootDir: DARK_Server
