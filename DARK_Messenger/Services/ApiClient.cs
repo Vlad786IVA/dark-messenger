@@ -10,7 +10,7 @@ public class ApiClient
     private readonly HttpClient _http;
     private string? _token;
     public string? Token => _token;
-    private static readonly string BaseUrl = System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "http://10.0.2.2:8080";
+    private static readonly string BaseUrl = System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "https://dark-messenger-0h3o.onrender.com";
 
     public ApiClient()
     {

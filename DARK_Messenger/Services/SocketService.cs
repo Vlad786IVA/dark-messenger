@@ -27,7 +27,8 @@ public class SocketService
         try
         {
             _ws = new ClientWebSocket();
-            var uri = new Uri($"ws://10.0.2.2:8080/ws?token={_token}");
+            var wsBase = ApiClient.BaseUrl.Replace("https://", "wss://").Replace("http://", "ws://");
+            var uri = new Uri($"{wsBase}/ws?token={_token}");
             await _ws.ConnectAsync(uri, _cts.Token);
             _receiveTask = ReceiveLoopAsync(_cts.Token);
             await _receiveTask;

@@ -9,7 +9,7 @@ namespace DARK_Messenger_WPF.Services;
 public static class ApiClient
 {
     private static readonly HttpClient _http = new();
-    private static string _baseUrl = (System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "http://localhost:8080") + "/api";
+    private static string _baseUrl = (System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "https://dark-messenger-0h3o.onrender.com") + "/api";
     public static string? Token { get; set; }
     public static string BaseUrl
     {

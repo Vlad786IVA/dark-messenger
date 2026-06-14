@@ -10,7 +10,7 @@ public class SettingsData
     public string Username { get; set; } = "";
     public string DisplayName { get; set; } = "";
     public string AvatarUrl { get; set; } = "";
-    public string ServerUrl { get; set; } = System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "http://localhost:8080";
+    public string ServerUrl { get; set; } = System.Environment.GetEnvironmentVariable("DARK_SERVER_URL") ?? "https://dark-messenger-0h3o.onrender.com";
     public bool IsDarkTheme { get; set; } = true;
     public string Language { get; set; } = "ru";
 }

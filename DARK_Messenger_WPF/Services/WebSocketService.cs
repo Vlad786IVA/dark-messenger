@@ -34,7 +34,7 @@ public static class WebSocketService
         _ws = new ClientWebSocket();
         try
         {
-            var serverUrl = ApiClient.BaseUrl.Replace("http://", "ws://").Replace("/api", "");
+            var serverUrl = ApiClient.BaseUrl.Replace("https://", "wss://").Replace("http://", "ws://").Replace("/api", "");
             await _ws.ConnectAsync(new Uri(serverUrl), _cts.Token);
             var authMsg = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { type = "auth", token }));
             await _ws.SendAsync(new ArraySegment<byte>(authMsg), WebSocketMessageType.Text, true, _cts.Token);
